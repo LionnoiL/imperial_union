@@ -2,6 +2,7 @@ package ua.gaponov.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
  * @author Andriy Gaponov
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public class FilesUtils {
 
     public static void saveTextFile(String filePath, String text) {
@@ -50,19 +52,16 @@ public class FilesUtils {
             FilesUtils.checkFileDirAndCreateDir(fileName);
             FilesUtils.saveTextFile(fileName, "");
         }
-        FileInputStream fileInputStream = new FileInputStream(file);
-        return fileInputStream;
+        return new FileInputStream(file);
     }
 
     public static List<String> getFilesLines(String fileName) {
-
         List<String> result = new ArrayList<>();
         try {
             result = Files.readAllLines(Path.of(fileName));
         } catch (IOException e) {
-            System.out.println("Error read file " + fileName);
+            log.error("Error read file {}", fileName);
         }
-
         return result;
     }
 }
