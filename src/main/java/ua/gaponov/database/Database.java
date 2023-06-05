@@ -2,11 +2,15 @@ package ua.gaponov.database;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.flywaydb.core.Flyway;
+import ua.gaponov.config.Config;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Properties;
+
+import static ua.gaponov.config.Constants.*;
 
 /**
  * @author Andriy Gaponov
@@ -14,12 +18,13 @@ import java.sql.SQLException;
 public class Database {
 
     private static BasicDataSource dataSource = null;
+    private static final Properties properties = Config.loadProperties();
 
     static {
         dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:mysql://localhost:3307/imperial-union-db");
-        dataSource.setUsername("root");
-        dataSource.setPassword("12345");
+        dataSource.setUrl(properties.getProperty(CONNECTION_URL));
+        dataSource.setUsername(properties.getProperty(CONNECTION_USERNAME));
+        dataSource.setPassword(properties.getProperty(CONNECTION_PASSWORD));
 
         dataSource.setMinIdle(5);
         dataSource.setMaxIdle(10);

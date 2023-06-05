@@ -18,10 +18,9 @@ public class Main {
 
         Database.execSql("select * from products");
 
-            //List<Product1C> productList1 = Product1CService.getProductsFromFile("imperial_1.csv");
-            //List<Product1C> productList2 = Product1CService.getProductsFromFile("imperial_2.csv");
-            List<Product1C> productList3 = Product1CService.getProductsFromFile("imperial_3.csv");
-
+        List<Product1C> productList1 = Product1CService.getProductsFromFile("imperial_1.csv");
+        List<Product1C> productList2 = Product1CService.getProductsFromFile("imperial_2.csv");
+        List<Product1C> productList3 = Product1CService.getProductsFromFile("imperial_3.csv");
 
     }
 }

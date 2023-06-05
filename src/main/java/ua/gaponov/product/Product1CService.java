@@ -21,17 +21,22 @@ public class Product1CService {
 
         List<String> fileLines = FilesUtils.getFilesLines(fileName);
         for (String fileLine : fileLines) {
-            Product1C product1C = new Product1C();
-            String[] strings = fileLine.split(";");
-            product1C.setCode(strings[0]);
-            product1C.setName(strings[1]);
-            if (Objects.equals(strings[2], "1")){
-                product1C.setWeight(Objects.equals(strings[2], "1"));
+            try {
+                Product1C product1C = new Product1C();
+                String[] strings = fileLine.split(";");
+                product1C.setCode(strings[0]);
+                product1C.setName(strings[1]);
+                if (Objects.equals(strings[2], "1")){
+                    product1C.setWeight(Objects.equals(strings[2], "1"));
+                }
+                if (strings.length==4){
+                    product1C.setBarcode(strings[3]);
+                }
+                product1CList.add(product1C);
+            } catch (Exception e){
+                log.error("Failed parse csv line {}", fileLine);
             }
-            if (strings.length==4){
-                product1C.setBarcode(strings[3]);
-            }
-            product1CList.add(product1C);
+
         }
 
         return product1CList;
