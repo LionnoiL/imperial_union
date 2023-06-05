@@ -1,5 +1,8 @@
 package ua.gaponov.database;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.flywaydb.core.Flyway;
 import ua.gaponov.config.Config;
@@ -15,9 +18,11 @@ import static ua.gaponov.config.Constants.*;
 /**
  * @author Andriy Gaponov
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public class Database {
 
-    private static BasicDataSource dataSource = null;
+    private static BasicDataSource dataSource;
     private static final Properties properties = Config.loadProperties();
 
     static {

@@ -1,4 +1,4 @@
-package ua.gaponov.product;
+package ua.gaponov.entity.product1c;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,27 +16,29 @@ import java.util.Objects;
 @Slf4j
 public class Product1CService {
 
-    public static List<Product1C> getProductsFromFile(String fileName) {
+    public static List<Product1C> getProductsFromFile(String fileName, int shopId) {
         List<Product1C> product1CList = new ArrayList<>();
 
         List<String> fileLines = FilesUtils.getFilesLines(fileName);
         for (String fileLine : fileLines) {
             try {
                 Product1C product1C = new Product1C();
+                product1C.setShopId(shopId);
                 String[] strings = fileLine.split(";");
                 product1C.setCode(strings[0]);
                 product1C.setName(strings[1]);
-                if (Objects.equals(strings[2], "1")){
+                if (Objects.equals(strings[2], "1")) {
                     product1C.setWeight(Objects.equals(strings[2], "1"));
                 }
-                if (strings.length==4){
+                if (strings.length == 4) {
                     product1C.setBarcode(strings[3]);
+                } else {
+                    product1C.setBarcode(null);
                 }
                 product1CList.add(product1C);
-            } catch (Exception e){
+            } catch (Exception e) {
                 log.error("Failed parse csv line {}", fileLine);
             }
-
         }
 
         return product1CList;

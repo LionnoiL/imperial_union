@@ -1,4 +1,4 @@
-package ua.gaponov.product;
+package ua.gaponov.entity.product1c;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,4 +14,5 @@ public class Product1C {
     private String name;
     private boolean weight;
     private String barcode;
+    private int shopId;
 }
