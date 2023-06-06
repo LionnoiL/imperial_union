@@ -38,8 +38,7 @@ public class SqlHelper<T> {
         }
     }
 
-    public void execSql(List<DatabaseRequest> requests)
-            throws SQLException {
+    public void execSql(List<DatabaseRequest> requests) throws Exception {
         try (Connection connection = Database.getConnection()) {
             connection.setAutoCommit(false);
             try {
@@ -54,6 +53,7 @@ public class SqlHelper<T> {
             } catch (Exception ex) {
                 connection.rollback();
                 log.error("Database request execute failed. {}", ex);
+                throw new RuntimeException(ex);
             } finally {
                 connection.setAutoCommit(true);
             }

@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -41,10 +40,18 @@ public class Analyze {
             if (nonNull(product1C.getBarcode()) && !product1C.getBarcode().isEmpty()) {
                 Product productByBarcode = ProductService.getProductByBarcode(product1C.getBarcode());
                 if (isNull(productByBarcode)) {
+                    //new barcode. add product
                     try {
                         ProductService.save(product1C);
                     } catch (SQLException e) {
-                        log.error("Save product {} failed", product1C.getName(), e);
+                        log.error("Save product {} failed", product1C, e);
+                    }
+                } else {
+                    //add shop_product
+                    try {
+                        ProductService.addShopProduct(productByBarcode.getId(), product1C);
+                    } catch (SQLException e) {
+                        log.error("Save shop product {} failed", product1C.getName(), e);
                     }
                 }
             }
@@ -52,7 +59,7 @@ public class Analyze {
         log.info("End check barcodes");
     }
 
-    public static void analyzeNames(){
+    public static void analyzeNames() {
         log.info("Start analyze names");
         int matchValue = 5;
 
@@ -67,22 +74,23 @@ public class Analyze {
         int currentIndex = 0;
 
         for (Product product : products) {
-            for (Product product1 : products) {
-                currentIndex += 1;
-                if (currentIndex >= packetSize) {
-                    currentIndex = 0;
-                    packet += 1;
-                    log.debug("{}%", packet);
-                }
 
-                if (product.getId().equals(product1.getId())){
+            currentIndex += 1;
+            if (currentIndex >= packetSize) {
+                currentIndex = 0;
+                packet += 1;
+                log.debug("{}%", packet);
+            }
+
+            for (Product product1 : products) {
+                if (product.getId().equals(product1.getId())) {
                     continue;
                 }
                 Integer result = defaultInstance.apply(product.getName(), product1.getName());
-                if (result <= matchValue){
-                    log.info("{}, {}, {}", product.getName(), product1.getName(), result);
+                if (result <= matchValue) {
+                    //log.info("{}, {}, {}", product.getName(), product1.getName(), result);
                     Map<Product, Integer> productIntegerMap = new HashMap<>();
-                    if (results.containsKey(product)){
+                    if (results.containsKey(product)) {
                         productIntegerMap = results.get(product);
                     }
                     productIntegerMap.put(product1, result);
@@ -94,9 +102,9 @@ public class Analyze {
                     }
                 }
             }
-            if (nonNull(results.get(product))){
-                log.info("{} - {}", product.getName(), results.get(product).size());
-            }
+//            if (nonNull(results.get(product))) {
+//                log.info("{} - {}", product.getName(), results.get(product).size());
+//            }
         }
         log.info("End analyze names");
     }

@@ -3,6 +3,7 @@ package ua.gaponov.entity.product;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ua.gaponov.database.Database;
 import ua.gaponov.database.DatabaseRequest;
 import ua.gaponov.database.SqlHelper;
 import ua.gaponov.database.StatementParameters;
@@ -89,6 +90,8 @@ public class ProductService {
                     INSERT INTO products (id, product_name, weight) VALUES (?, ?, ?)
                     """;
             requestList.add(new DatabaseRequest(sql, parameters));
+        } else {
+            newProductId = findProductByName.getId();
         }
 
 
@@ -120,8 +123,11 @@ public class ProductService {
             requestList.add(new DatabaseRequest(sql, parameters));
         }
 
-
-        PRODUCT_SQL_HELPER.execSql(requestList);
+        try {
+            PRODUCT_SQL_HELPER.execSql(requestList);
+        } catch (Exception e) {
+            log.error(product.toString());
+        }
     }
 
     public static List<Barcode> getProductBarcodes(Product product) {
@@ -139,9 +145,49 @@ public class ProductService {
                 similarityProduct.getId()
         );
         String sql = """
-                    INSERT INTO similarity_products (product_id_1, product_id_2) VALUES (?, ?)
-                    """;
+                INSERT INTO similarity_products (product_id_1, product_id_2) VALUES (?, ?)
+                """;
         requestList.add(new DatabaseRequest(sql, parameters));
-        PRODUCT_SQL_HELPER.execSql(requestList);
+        try {
+            PRODUCT_SQL_HELPER.execSql(requestList);
+        } catch (Exception e) {
+            log.error(mainProduct.toString());
+        }
+    }
+
+    public static void checkCompleteProduct() {
+        String sql = """
+                update products set products.complete = IF(products.id IN (
+                SELECT a.id FROM (SELECT products.id, COUNT(shop_products.product_id) cnt FROM products
+                LEFT JOIN shop_products ON shop_products.product_id = products.id
+                GROUP BY products.id) a
+                WHERE a.cnt = 3
+                ), 1, 0);
+                """;
+        Database.execSql(sql);
+    }
+
+    public static void addShopProduct(String id, Product1C product) throws SQLException {
+        int shopProductFinded = PRODUCT_SQL_HELPER.getCount("select count(product_code) from shop_products where product_code = '"
+                + product.getCode()
+                + "' and shop_id = " + product.getShopId());
+        if (shopProductFinded == 0) {
+            List<DatabaseRequest> requestList = new ArrayList<>();
+
+            StatementParameters<Object> parameters = StatementParameters.build(
+                    id,
+                    product.getCode(),
+                    product.getShopId()
+            );
+            String sql = """
+                    INSERT INTO shop_products (product_id, product_code, shop_id) VALUES (?, ?, ?)
+                    """;
+            requestList.add(new DatabaseRequest(sql, parameters));
+            try {
+                PRODUCT_SQL_HELPER.execSql(requestList);
+            } catch (Exception e) {
+                log.error(product.toString());
+            }
+        }
     }
 }

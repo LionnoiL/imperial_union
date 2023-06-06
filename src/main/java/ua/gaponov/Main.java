@@ -3,6 +3,7 @@ package ua.gaponov;
 import lombok.extern.slf4j.Slf4j;
 import ua.gaponov.analyze.Analyze;
 import ua.gaponov.config.LoggingConfiguration;
+import ua.gaponov.entity.product.ProductService;
 import ua.gaponov.entity.product1c.Product1C;
 import ua.gaponov.entity.product1c.Product1CService;
 
@@ -26,6 +27,8 @@ public class Main {
         Analyze.checkBarcodes(productList1);
 
         Analyze.analyzeNames();
+
+        ProductService.checkCompleteProduct();
     }
 
 
