@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
+
 /**
  * @author Andriy Gaponov
  */
@@ -27,9 +29,11 @@ public class ProductService {
     private static final SqlHelper<Product> PRODUCT_SQL_HELPER = new SqlHelper<>();
     private static final SqlHelper<Barcode> BARCODE_SQL_HELPER = new SqlHelper<>();
 
+    public static List<Product> getAll() {
+        return PRODUCT_SQL_HELPER.getAll("SELECT * FROM products", new ProductDatabaseMapper());
+    }
 
-
-    public static Product getProductById(String id){
+    public static Product getProductById(String id) {
         if (id == null || id.isEmpty()) {
             return null;
         }
@@ -41,7 +45,7 @@ public class ProductService {
         return PRODUCT_SQL_HELPER.getOne(sql, parameters, MAPPER);
     }
 
-    public static Product getProductByBarcode(String id){
+    public static Product getProductByBarcode(String id) {
         if (id == null || id.isEmpty()) {
             return null;
         }
@@ -54,41 +58,65 @@ public class ProductService {
         return PRODUCT_SQL_HELPER.getOne(sql, parameters, MAPPER);
     }
 
+    public static Product getProductByName(String productName) {
+        if (productName == null || productName.isEmpty()) {
+            return null;
+        }
+        StatementParameters<String> parameters = StatementParameters.build(productName);
+        String sql = """
+                SELECT * FROM products
+                WHERE products.product_name = ?
+                """;
+        return PRODUCT_SQL_HELPER.getOne(sql, parameters, MAPPER);
+    }
+
     public static void save(Product1C product) throws SQLException {
-       List<DatabaseRequest> requestList = new ArrayList<>();
-       String newProductId = UUID.randomUUID().toString();
+        List<DatabaseRequest> requestList = new ArrayList<>();
+        String newProductId = UUID.randomUUID().toString();
+
+        StatementParameters<Object> parameters;
+        String sql;
 
         //PRODUCTS
-        StatementParameters<Object> parameters = StatementParameters.build(
-                newProductId,
-                product.getName(),
-                product.isWeight()
-        );
-        String sql = """
-                INSERT INTO products (id, product_name, weight) VALUES (?, ?, ?)
-                """;
-        requestList.add(new DatabaseRequest(sql, parameters));
+        Product findProductByName = getProductByName(product.getName());
+        if (isNull(findProductByName)) {
+            parameters = StatementParameters.build(
+                    newProductId,
+                    product.getName(),
+                    product.isWeight()
+            );
+            sql = """
+                    INSERT INTO products (id, product_name, weight) VALUES (?, ?, ?)
+                    """;
+            requestList.add(new DatabaseRequest(sql, parameters));
+        }
+
 
         //SHOP_PRODUCTS
-        parameters = StatementParameters.build(
-                newProductId,
-                product.getCode(),
-                product.getShopId()
-        );
-        sql = """
-                INSERT INTO shop_products (product_id, product_code, shop_id) VALUES (?, ?, ?)
-                """;
-        requestList.add(new DatabaseRequest(sql, parameters));
+        int shopProductFinded = PRODUCT_SQL_HELPER.getCount("select count(product_code) from shop_products where product_code = '"
+                + product.getCode()
+                + "' and shop_id = " + product.getShopId());
+        if (shopProductFinded == 0) {
+            parameters = StatementParameters.build(
+                    newProductId,
+                    product.getCode(),
+                    product.getShopId()
+            );
+            sql = """
+                    INSERT INTO shop_products (product_id, product_code, shop_id) VALUES (?, ?, ?)
+                    """;
+            requestList.add(new DatabaseRequest(sql, parameters));
+        }
 
         //BARCODES
-        if (Objects.nonNull(product.getBarcode()) && !product.getBarcode().isEmpty()){
+        if (Objects.nonNull(product.getBarcode()) && !product.getBarcode().isEmpty()) {
             parameters = StatementParameters.build(
                     newProductId,
                     product.getBarcode()
             );
             sql = """
-                INSERT INTO barcodes (product_id, barcode) VALUES (?, ?)
-                """;
+                    INSERT INTO barcodes (product_id, barcode) VALUES (?, ?)
+                    """;
             requestList.add(new DatabaseRequest(sql, parameters));
         }
 
@@ -97,9 +125,23 @@ public class ProductService {
     }
 
     public static List<Barcode> getProductBarcodes(Product product) {
-            StatementParameters<String> parameters = StatementParameters.build(product.getId());
-            return BARCODE_SQL_HELPER.getAll("select * from barcodes where product_id = ?",
-                    parameters,
-                    new BarcodeDatabaseMapper());
+        StatementParameters<String> parameters = StatementParameters.build(product.getId());
+        return BARCODE_SQL_HELPER.getAll("select * from barcodes where product_id = ?",
+                parameters,
+                new BarcodeDatabaseMapper());
+    }
+
+    public static void addSimilarityProducts(Product mainProduct, Product similarityProduct) throws SQLException {
+        List<DatabaseRequest> requestList = new ArrayList<>();
+
+        StatementParameters<Object> parameters = StatementParameters.build(
+                mainProduct.getId(),
+                similarityProduct.getId()
+        );
+        String sql = """
+                    INSERT INTO similarity_products (product_id_1, product_id_2) VALUES (?, ?)
+                    """;
+        requestList.add(new DatabaseRequest(sql, parameters));
+        PRODUCT_SQL_HELPER.execSql(requestList);
     }
 }

@@ -19,7 +19,6 @@ public class ProductDatabaseMapper implements Mapper<Product> {
             product.setId(rs.getString("id"));
             product.setName(rs.getString("product_name"));
             product.setWeight(rs.getBoolean("weight"));
-            //product.setBarcodes(ProductService.getProductBarcodes(product));
             return product;
         } catch (SQLException ex) {
             log.error("Error map product", ex);
