@@ -34,6 +34,10 @@ public class ProductService {
         return PRODUCT_SQL_HELPER.getAll("SELECT * FROM products", new ProductDatabaseMapper());
     }
 
+    public static List<Product> getAllNonComplete() {
+        return PRODUCT_SQL_HELPER.getAll("SELECT * FROM products where complete = 0", new ProductDatabaseMapper());
+    }
+
     public static Product getProductById(String id) {
         if (id == null || id.isEmpty()) {
             return null;
@@ -189,5 +193,9 @@ public class ProductService {
                 log.error(product.toString());
             }
         }
+    }
+
+    public static void deleteAllSimilarityProducts(){
+        Database.execSql("delete from similarity_products");
     }
 }

@@ -60,20 +60,24 @@ public class Analyze {
     }
 
     public static void analyzeNames() {
+        ProductService.checkCompleteProduct();
+        ProductService.deleteAllSimilarityProducts();
+
         log.info("Start analyze names");
         int matchValue = 5;
 
         LevenshteinDistance defaultInstance = LevenshteinDistance.getDefaultInstance();
         Map<Product, Map<Product, Integer>> results = new HashMap<>();
 
-        List<Product> products = ProductService.getAll();
+        List<Product> allNonComplete = ProductService.getAllNonComplete();
+        List<Product> allProducts = ProductService.getAll();
 
-        int listSize = products.size();
+        int listSize = allProducts.size();
         int packetSize = listSize / 100;
         int packet = 1;
         int currentIndex = 0;
 
-        for (Product product : products) {
+        for (Product product : allNonComplete) {
 
             currentIndex += 1;
             if (currentIndex >= packetSize) {
@@ -82,13 +86,12 @@ public class Analyze {
                 log.debug("{}%", packet);
             }
 
-            for (Product product1 : products) {
+            for (Product product1 : allProducts) {
                 if (product.getId().equals(product1.getId())) {
                     continue;
                 }
                 Integer result = defaultInstance.apply(product.getName(), product1.getName());
                 if (result <= matchValue) {
-                    //log.info("{}, {}, {}", product.getName(), product1.getName(), result);
                     Map<Product, Integer> productIntegerMap = new HashMap<>();
                     if (results.containsKey(product)) {
                         productIntegerMap = results.get(product);
@@ -102,9 +105,6 @@ public class Analyze {
                     }
                 }
             }
-//            if (nonNull(results.get(product))) {
-//                log.info("{} - {}", product.getName(), results.get(product).size());
-//            }
         }
         log.info("End analyze names");
     }
