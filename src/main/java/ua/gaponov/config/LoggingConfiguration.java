@@ -8,7 +8,7 @@ import java.util.Properties;
 /**
  * @author Andriy Gaponov
  */
-public class LoggingConfiguration {
+public final class LoggingConfiguration {
     public static final String LOG_PATTERN = "log4j.conversion.pattern";
     public static final String LOG_FILE = "log4j.appender.file";
     public static final String LOG_LEVEL = "log4j.logger.level";

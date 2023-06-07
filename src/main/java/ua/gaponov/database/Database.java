@@ -27,9 +27,9 @@ public class Database {
 
     static {
         dataSource = new BasicDataSource();
-        dataSource.setUrl(properties.getProperty(CONNECTION_URL));
-        dataSource.setUsername(properties.getProperty(CONNECTION_USERNAME));
-        dataSource.setPassword(properties.getProperty(CONNECTION_PASSWORD));
+        dataSource.setUrl(properties.getProperty(CONNECTION_URL_H2));
+        dataSource.setUsername(properties.getProperty(CONNECTION_USERNAME_H2));
+        dataSource.setPassword(properties.getProperty(CONNECTION_PASSWORD_H2));
 
         dataSource.setMinIdle(5);
         dataSource.setMaxIdle(10);

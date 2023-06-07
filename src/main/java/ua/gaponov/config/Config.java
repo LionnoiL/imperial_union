@@ -11,7 +11,7 @@ import java.util.Properties;
  * @author Andriy Gaponov
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Config {
+public final class Config {
 
     public static Properties loadProperties() {
         Properties properties = new Properties();

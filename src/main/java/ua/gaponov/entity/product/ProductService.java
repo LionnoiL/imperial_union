@@ -35,7 +35,7 @@ public class ProductService {
     }
 
     public static List<Product> getAllNonComplete() {
-        return PRODUCT_SQL_HELPER.getAll("SELECT * FROM products where complete = 0", new ProductDatabaseMapper());
+        return PRODUCT_SQL_HELPER.getAll("SELECT * FROM products where complete_shop = 0 and complete_name = 0", new ProductDatabaseMapper());
     }
 
     public static Product getProductById(String id) {
@@ -161,7 +161,7 @@ public class ProductService {
 
     public static void checkCompleteProduct() {
         String sql = """
-                update products set products.complete = IF(products.id IN (
+                update products set products.complete_shop = IF(products.id IN (
                 SELECT a.id FROM (SELECT products.id, COUNT(shop_products.product_id) cnt FROM products
                 LEFT JOIN shop_products ON shop_products.product_id = products.id
                 GROUP BY products.id) a

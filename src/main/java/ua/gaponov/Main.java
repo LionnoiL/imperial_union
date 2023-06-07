@@ -17,13 +17,13 @@ public class Main {
 
         new LoggingConfiguration();
 
-//        List<Product1C> productList1 = Product1CService.getProductsFromFile("imperial_1.csv", 1);
-//        List<Product1C> productList2 = Product1CService.getProductsFromFile("imperial_2.csv", 2);
-//        List<Product1C> productList3 = Product1CService.getProductsFromFile("imperial_3.csv", 3);
-//
-//        Analyze.checkBarcodes(productList3);
-//        Analyze.checkBarcodes(productList2);
-//        Analyze.checkBarcodes(productList1);
+        List<Product1C> productList1 = Product1CService.getProductsFromFile("imperial_1.csv", 1);
+        List<Product1C> productList2 = Product1CService.getProductsFromFile("imperial_2.csv", 2);
+        List<Product1C> productList3 = Product1CService.getProductsFromFile("imperial_3.csv", 3);
+
+        Analyze.checkBarcodes(productList3);
+        Analyze.checkBarcodes(productList2);
+        Analyze.checkBarcodes(productList1);
 
         Analyze.analyzeNames();
     }
