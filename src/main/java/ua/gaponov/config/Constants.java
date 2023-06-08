@@ -15,4 +15,6 @@ public final class Constants {
     public static final String CONNECTION_URL_H2 = "com.h2.url";
     public static final String CONNECTION_USERNAME_H2 = "com.h2.username";
     public static final String CONNECTION_PASSWORD_H2 = "com.h2.password";
+    public static final String PRODUCT_ID_PARAMETER_NAME = "id";
+    public static final String DEFAULT_FILE_NAME = "application.properties";
 }

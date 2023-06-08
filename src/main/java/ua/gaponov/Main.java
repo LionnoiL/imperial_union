@@ -15,7 +15,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-        new LoggingConfiguration();
+        new LoggingConfiguration().setup();
 
         List<Product1C> productList1 = Product1CService.getProductsFromFile("imperial_1.csv", 1);
         List<Product1C> productList2 = Product1CService.getProductsFromFile("imperial_2.csv", 2);

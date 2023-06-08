@@ -31,11 +31,21 @@ public class ProductService {
     private static final SqlHelper<Barcode> BARCODE_SQL_HELPER = new SqlHelper<>();
 
     public static List<Product> getAll() {
-        return PRODUCT_SQL_HELPER.getAll("SELECT * FROM products", new ProductDatabaseMapper());
+        return PRODUCT_SQL_HELPER.getAll("SELECT * FROM products", MAPPER);
     }
 
     public static List<Product> getAllNonComplete() {
-        return PRODUCT_SQL_HELPER.getAll("SELECT * FROM products where complete_shop = 0 and complete_name = 0", new ProductDatabaseMapper());
+        return PRODUCT_SQL_HELPER.getAll("SELECT * FROM products where complete_shop = false and complete_name = false", MAPPER);
+    }
+
+    public static List<Product> getFirstNonComplite(int count) {
+        StatementParameters<Integer> parameters = StatementParameters.build(count);
+        String sql = """
+                SELECT * FROM products where complete_shop = false and complete_name = FALSE
+                order by product_name
+                limit ?
+                """;
+        return PRODUCT_SQL_HELPER.getAll(sql, parameters, MAPPER);
     }
 
     public static Product getProductById(String id) {
@@ -166,16 +176,13 @@ public class ProductService {
                 LEFT JOIN shop_products ON shop_products.product_id = products.id
                 GROUP BY products.id) a
                 WHERE a.cnt = 3
-                ), 1, 0);
+                ), true, false);
                 """;
         Database.execSql(sql);
     }
 
     public static void addShopProduct(String id, Product1C product) throws SQLException {
-        int shopProductFinded = PRODUCT_SQL_HELPER.getCount("select count(product_code) from shop_products where product_code = '"
-                + product.getCode()
-                + "' and shop_id = " + product.getShopId());
-        if (shopProductFinded == 0) {
+        if (!checkShopProduct(product)) {
             List<DatabaseRequest> requestList = new ArrayList<>();
 
             StatementParameters<Object> parameters = StatementParameters.build(
@@ -195,7 +202,14 @@ public class ProductService {
         }
     }
 
-    public static void deleteAllSimilarityProducts(){
+    public static boolean checkShopProduct(Product1C product) {
+        int shopProductFinded = PRODUCT_SQL_HELPER.getCount("select count(product_code) from shop_products where product_code = '"
+                + product.getCode()
+                + "' and shop_id = " + product.getShopId());
+        return shopProductFinded > 0;
+    }
+
+    public static void deleteAllSimilarityProducts() {
         Database.execSql("delete from similarity_products");
     }
 }

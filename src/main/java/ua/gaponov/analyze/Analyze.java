@@ -59,6 +59,33 @@ public class Analyze {
         log.info("End check barcodes");
     }
 
+    public static void checkWeight(List<Product1C> productList) {
+        log.info("Start check weight");
+        int listSize = productList.size();
+        int packetSize = listSize / 100;
+        int packet = 1;
+        int currentIndex = 0;
+
+        for (Product1C product1C : productList) {
+            currentIndex += 1;
+            if (currentIndex >= packetSize) {
+                currentIndex = 0;
+                packet += 1;
+                log.debug("{}%", packet);
+            }
+            if (product1C.isWeight()) {
+                if (!ProductService.checkShopProduct(product1C)) {
+                    try {
+                        ProductService.save(product1C);
+                    } catch (SQLException e) {
+                        log.error("Save product {} failed", product1C, e);
+                    }
+                }
+            }
+        }
+        log.info("End check weight");
+    }
+
     public static void analyzeNames() {
         ProductService.checkCompleteProduct();
         ProductService.deleteAllSimilarityProducts();

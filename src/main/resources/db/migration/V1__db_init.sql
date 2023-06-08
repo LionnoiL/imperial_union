@@ -2,8 +2,8 @@ CREATE TABLE products (
 	id varchar(36) NOT NULL,
 	product_name varchar(200) NOT NULL,
 	weight bool,
-	complete_shop bool,
-	complete_name bool,
+	complete_shop bool default 0,
+	complete_name bool default 0,
 	CONSTRAINT products_pkey PRIMARY KEY (id)
 );
 
