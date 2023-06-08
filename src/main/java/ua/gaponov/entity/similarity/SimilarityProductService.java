@@ -7,7 +7,6 @@ import ua.gaponov.entity.product.Product;
 import ua.gaponov.entity.product.ProductDatabaseMapper;
 import ua.gaponov.entity.product.ProductService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.nonNull;
@@ -43,12 +42,17 @@ public class SimilarityProductService {
             );
             for (String simProductId : similarityProductList) {
                 Product productById = ProductService.getProductById(simProductId);
-                if (nonNull(productById)){
+                if (nonNull(productById)) {
                     similarityProduct.getSimilarityProducts().add(productById);
                 }
             }
         }
 
         return similarityProduct;
+    }
+
+    public static int getCount(){
+        return PRODUCT_SQL_HELPER.getCount(
+                "SELECT count(product_id_1) cnt FROM similarity_products");
     }
 }

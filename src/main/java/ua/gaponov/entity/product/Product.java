@@ -6,7 +6,6 @@ import ua.gaponov.entity.shopproduct.ShopProduct;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Andriy Gaponov
@@ -14,9 +13,13 @@ import java.util.Map;
 @Getter
 @Setter
 public class Product {
+    List<String> barcodes = new ArrayList<>();
+    List<ShopProduct> shopProducts = new ArrayList<>();
     private String id;
     private String name;
     private boolean weight;
-    List<String> barcodes = new ArrayList<>();
-    List<ShopProduct> shopProducts = new ArrayList<>();
+
+    public String getBarcodesStringList() {
+        return String.join(", ", barcodes);
+    }
 }

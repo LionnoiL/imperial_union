@@ -22,32 +22,74 @@
 <body>
 <div class="container mt-1">
 
-    <div><h2>Схожі товари</h2></div>
-    <div><h3 th:text="${product.mainProduct.name}"></h3></div>
+    <div><h3 th:text="'Схожі товари. Залишилось:  ' + ${count}"></h3></div>
+    <br>
+    <div><h1 th:text="${product.mainProduct.name}"></h1></div>
+    <div><h3 th:text="${product.mainProduct.getBarcodesStringList()}"></h3></div>
 
-        <div class="col-12 table-responsive">
-            <table id="datatable" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                    <th>Назва</th>
-                    <th></th>
-                    <th style="width: 20px">Ваговий</th>
-                </thead>
-                <tbody>
-                <tr th:each="simProduct: ${product.similarityProducts}">
-                    <td th:text="${simProduct.name}"></td>
-                    <td></td>
-                    <td class="text-center">
-                        <div th:switch="${simProduct.weight}">
-                            <span class="badge bg-success" th:case="true">Так</span>
-                            <span class="badge bg-danger" th:case="false">Ні</span>
+    <ul>
+        <li th:each="shopProductMain : ${product.mainProduct.shopProducts}"
+            th:text="'Магазин ' + ${shopProductMain.shopId} + ' - ' + ${shopProductMain.code}"></li>
+    </ul>
+    <br>
+    <div class="col-12 table-responsive">
+        <table id="datatable" class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Штрихкод</th>
+                <th style="width: 20px">Ваговий</th>
+                <th style="width: 40px">Аналог</th>
+
+            </thead>
+            <tbody>
+            <tr th:each="simProduct: ${product.similarityProducts}">
+                <td>
+                    <div th:text="${simProduct.name}"></div>
+                    <ul>
+                        <li th:each="shopProduct : ${simProduct.shopProducts}"
+                            th:text="'Магазин ' + ${shopProduct.shopId} + ' - ' + ${shopProduct.code}"></li>
+                    </ul>
+                </td>
+                <td th:text="${simProduct.getBarcodesStringList()}"></td>
+                <td class="text-center">
+                    <div th:switch="${simProduct.weight}">
+                        <span class="badge" th:case="true">Так</span>
+                        <span class="badge" th:case="false">Ні</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4 d-flex justify-content-end">
+                            <div class="row ml-0 mr-0">
+
+                                <form action="/similarity/analog" class="mr-1" method="post">
+                                    <input type="hidden" name="simProductId" th:value="${simProduct.id}">
+                                    <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
+                                    <button style="width: 100px" type="submit" class="btn btn-success">
+                                        <i class="material-icons mr-1">Так</i>
+                                    </button>
+                                </form>
+
+                                <form action="/similarity/different" class="mr-1" method="post">
+                                    <input type="hidden" name="simProductId" th:value="${simProduct.id}">
+                                    <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
+                                    <button style="width: 100px; margin-top: 2px" type="submit" class="btn btn-danger">
+                                        <i class="material-icons mr-1">Ні</i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </td>
-                </tr>
-                </tbody>
+                    </div>
 
-            </table>
-        </div>
+
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
 
 
 </div>
