@@ -26,12 +26,14 @@ import static java.util.Objects.nonNull;
 public class Analyze {
 
     private static final int MATCH_VALUE = 5;
-    private static int packet = 1;
+    private static int packet = 0;
     private static int currentIndex = 0;
     private static int packetSize = 0;
 
     public static void importData(List<Product1C> productList) {
         log.info("Start check barcodes");
+        currentIndex = 0;
+        packet = 0;
         packetSize = productList.size() / 100;
 
         for (Product1C product1C : productList) {
@@ -80,6 +82,8 @@ public class Analyze {
         List<Product> allNonComplete = ProductService.getAllNonComplete();
         List<Product> allProducts = ProductService.getAll();
 
+        currentIndex = 0;
+        packet = 0;
         packetSize = allProducts.size() / 100;
 
         for (Product product : allNonComplete) {
