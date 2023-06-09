@@ -30,10 +30,11 @@ public class Product1CService {
                 if (Objects.equals(strings[2], "1")) {
                     product1C.setWeight(Objects.equals(strings[2], "1"));
                 }
+                product1C.setBarcode(null);
                 if (strings.length == 4) {
-                    product1C.setBarcode(strings[3]);
-                } else {
-                    product1C.setBarcode(null);
+                    if ('2'!=strings[3].charAt(0)){
+                        product1C.setBarcode(strings[3]);
+                    }
                 }
                 product1CList.add(product1C);
             } catch (Exception e) {

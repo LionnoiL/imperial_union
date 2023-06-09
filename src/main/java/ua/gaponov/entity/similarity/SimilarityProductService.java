@@ -50,6 +50,46 @@ public class SimilarityProductService {
                         SELECT p.* FROM similarity_products s
                         LEFT JOIN products p ON p.id = s.product_id_1
                         GROUP BY s.product_id_1
+                        ORDER BY p.product_name
+                        LIMIT 1
+                        """,
+                PRODUCT_DATABASE_MAPPER
+        );
+        for (Product product : products) {
+            similarityProduct.setMainProduct(product);
+
+            StatementParameters<String> productIdParameter = StatementParameters.build(product.getId());
+            List<String> similarityProductList = new SqlHelper<String>().getAll(
+                    "SELECT product_id_2 FROM similarity_products WHERE product_id_1 = ?",
+                    productIdParameter,
+                    new StringDatabaseMapper()
+            );
+            for (String simProductId : similarityProductList) {
+                Product productById = ProductService.getById(simProductId);
+                if (nonNull(productById)) {
+                    similarityProduct.getSimilarityProducts().add(productById);
+                }
+            }
+        }
+
+        return similarityProduct;
+    }
+
+    public static SimilarityProduct getFirst(List<String> skipProducts) {
+        String whereString = "";
+        if (skipProducts.size()>0){
+            whereString = " where s.product_id_1 not in ("+String.join(",", skipProducts)+")";
+        }
+        SimilarityProduct similarityProduct = new SimilarityProduct();
+        List<Product> products = PRODUCT_SQL_HELPER.getAll(
+                """
+                        SELECT p.* FROM similarity_products s
+                        LEFT JOIN products p ON p.id = s.product_id_1
+                        """ +
+                        whereString +
+                        """
+                        GROUP BY s.product_id_1
+                        ORDER BY p.product_name
                         LIMIT 1
                         """,
                 PRODUCT_DATABASE_MAPPER

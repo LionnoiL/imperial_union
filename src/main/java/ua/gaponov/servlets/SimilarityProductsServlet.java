@@ -14,6 +14,7 @@ import ua.gaponov.entity.similarity.SimilarityProduct;
 import ua.gaponov.entity.similarity.SimilarityProductService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,8 @@ import static ua.gaponov.config.Constants.PRODUCT_ID_PARAMETER_NAME;
 @WebServlet(value = "/similarity/*")
 public class SimilarityProductsServlet extends ApplicationServlet {
 
+    private static List<String> skipProducts = new ArrayList<>();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
@@ -37,7 +40,7 @@ public class SimilarityProductsServlet extends ApplicationServlet {
 
         int count = SimilarityProductService.getCount();
 
-        SimilarityProduct similarityProduct = SimilarityProductService.getFirst();
+        SimilarityProduct similarityProduct = SimilarityProductService.getFirst(skipProducts);
         ProductService.fillBarcodes(similarityProduct.getMainProduct());
         ProductService.fillShopProducts(similarityProduct.getMainProduct());
 
@@ -75,6 +78,12 @@ public class SimilarityProductsServlet extends ApplicationServlet {
                 break;
             case "/different":
                 SimilarityProductService.deleteSimilarityProductsByProductId(simProductId);
+                break;
+            case "/skip":
+                skipProducts.add("'"+mainProductId+"'");
+                break;
+            case "/delete-skip":
+                skipProducts.clear();
                 break;
             default:
         }

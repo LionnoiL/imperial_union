@@ -24,6 +24,24 @@
 
     <div><h3 th:text="'Схожі товари. Залишилось:  ' + ${count}"></h3></div>
     <br>
+
+    <div class="btn-group">
+        <form action="/similarity/skip" class="mr-1" method="post">
+            <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
+            <button type="submit" class="btn btn-warning">
+                <i class="material-icons mr-1">Пропустити</i>
+            </button>
+        </form>
+        <form action="/similarity/delete-skip" class="mr-1" method="post">
+            <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
+            <button type="submit" class="btn btn-success">
+                <i class="material-icons mr-1">Всі</i>
+            </button>
+        </form>
+    </div>
+
+
+
     <div><h1 th:text="${product.mainProduct.name}"></h1></div>
     <div><h3 th:text="${product.mainProduct.getBarcodesStringList()}"></h3></div>
 
@@ -59,15 +77,12 @@
                     </div>
                 </td>
                 <td>
-                    <div class="row">
-                        <div class="col-md-8"></div>
-                        <div class="col-md-4 d-flex justify-content-end">
-                            <div class="row ml-0 mr-0">
+                    <div class="btn-group">
 
                                 <form action="/similarity/analog" class="mr-1" method="post">
                                     <input type="hidden" name="simProductId" th:value="${simProduct.id}">
                                     <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
-                                    <button style="width: 100px" type="submit" class="btn btn-success">
+                                    <button type="submit" class="btn btn-success">
                                         <i class="material-icons mr-1">Так</i>
                                     </button>
                                 </form>
@@ -75,12 +90,11 @@
                                 <form action="/similarity/different" class="mr-1" method="post">
                                     <input type="hidden" name="simProductId" th:value="${simProduct.id}">
                                     <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
-                                    <button style="width: 100px; margin-top: 2px" type="submit" class="btn btn-danger">
+                                    <button type="submit" class="btn btn-danger">
                                         <i class="material-icons mr-1">Ні</i>
                                     </button>
                                 </form>
-                            </div>
-                        </div>
+
                     </div>
 
 
