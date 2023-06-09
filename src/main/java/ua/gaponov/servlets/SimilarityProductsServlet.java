@@ -9,13 +9,11 @@ import org.thymeleaf.context.Context;
 import ua.gaponov.entity.barcodes.BarcodeService;
 import ua.gaponov.entity.product.Product;
 import ua.gaponov.entity.product.ProductService;
-import ua.gaponov.entity.shopproduct.ShopProduct;
-import ua.gaponov.entity.shopproduct.ShopProductSevice;
+import ua.gaponov.entity.shopproduct.ShopProductService;
 import ua.gaponov.entity.similarity.SimilarityProduct;
 import ua.gaponov.entity.similarity.SimilarityProductService;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -62,21 +60,21 @@ public class SimilarityProductsServlet extends ApplicationServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String pathInfo = req.getPathInfo();
         String simProductId = req.getParameter("simProductId");
         String mainProductId = req.getParameter("mainProductId");
         switch (pathInfo) {
             case "/analog":
-                ShopProductSevice.moveShopProducts(mainProductId, simProductId);
+                ShopProductService.moveShopProducts(mainProductId, simProductId);
                 BarcodeService.moveBarcodes(mainProductId, simProductId);
 
-                ProductService.deleteSimilarityProductsByProductId(simProductId);
+                SimilarityProductService.deleteSimilarityProductsByProductId(simProductId);
                 ProductService.delete(simProductId);
 
                 break;
             case "/different":
-                ProductService.deleteSimilarityProductsByProductId(simProductId);
+                SimilarityProductService.deleteSimilarityProductsByProductId(simProductId);
                 break;
             default:
         }
@@ -85,6 +83,4 @@ public class SimilarityProductsServlet extends ApplicationServlet {
         resp.setStatus(resp.SC_MOVED_PERMANENTLY);
         resp.setHeader("Location", "/similarity");
     }
-
-
 }
