@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import ua.gaponov.entity.barcodes.BarcodeService;
 import ua.gaponov.entity.product.Product;
 import ua.gaponov.entity.product.ProductService;
 import ua.gaponov.entity.product1c.Product1C;
@@ -15,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 /**
@@ -39,13 +39,13 @@ public class Analyze {
         for (Product1C product1C : productList) {
             printStatus();
             if (nonNull(product1C.getBarcode()) && !product1C.getBarcode().isEmpty()) {
-                Product productByBarcode = ProductService.getByBarcode(product1C.getBarcode());
-                if (isNull(productByBarcode)) {
+                String productId = BarcodeService.getProductIdByBarcode(product1C.getBarcode());
+                if (productId.isEmpty()) {
                     //new barcode. add product
                     addProduct(product1C);
                 } else {
                     //add shop_product
-                    addShopProduct(productByBarcode, product1C);
+                    addShopProduct(productId, product1C);
                 }
             } else {
                 addProduct(product1C);
@@ -62,9 +62,9 @@ public class Analyze {
         }
     }
 
-    private static void addShopProduct(Product product, Product1C product1C) {
+    private static void addShopProduct(String productId, Product1C product1C) {
         try {
-            ShopProductService.addShopProduct(product.getId(), product1C);
+            ShopProductService.addShopProduct(productId, product1C);
         } catch (SQLException e) {
             log.error("Save shop product {} failed", product1C.getName(), e);
         }

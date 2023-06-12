@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import ua.gaponov.database.SqlHelper;
 import ua.gaponov.database.StatementParameters;
 import ua.gaponov.database.StringDatabaseMapper;
+import ua.gaponov.entity.product1c.Product1C;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -17,6 +18,8 @@ import java.util.List;
 @Slf4j
 public class BarcodeService {
 
+    private static final SqlHelper<Object> SQL_HELPER = new SqlHelper<>();
+
     public static void addBarcode(String productId, String barcode) throws SQLException {
         StatementParameters<Object> parameters = StatementParameters.build(
                 productId,
@@ -25,7 +28,7 @@ public class BarcodeService {
         String sql = """
                 INSERT INTO barcodes (product_id, barcode) VALUES (?, ?)
                 """;
-        new SqlHelper<>().execSql(sql, parameters);
+        SQL_HELPER.execSql(sql, parameters);
     }
 
     public static void addBarcode(String productId, List<String> barcodes) {
@@ -51,7 +54,7 @@ public class BarcodeService {
                 delete from barcodes where product_id = ?
                 """;
         try {
-            new SqlHelper<>().execSql(sql, parameters);
+            SQL_HELPER.execSql(sql, parameters);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -60,5 +63,12 @@ public class BarcodeService {
     public static void moveBarcodes(String mainProductId, String simProductId) {
         addBarcode(mainProductId, getProductBarcodes(simProductId));
         delete(simProductId);
+    }
+
+    public static String getProductIdByBarcode(String barcode) {
+        StatementParameters<String> parameters = StatementParameters.build(barcode);
+        return new SqlHelper<String>().getOne("select product_id from barcodes where barcode = ?",
+                parameters,
+                new StringDatabaseMapper());
     }
 }
