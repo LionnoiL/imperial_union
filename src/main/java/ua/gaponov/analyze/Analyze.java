@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 /**
@@ -40,7 +41,7 @@ public class Analyze {
             printStatus();
             if (nonNull(product1C.getBarcode()) && !product1C.getBarcode().isEmpty()) {
                 String productId = BarcodeService.getProductIdByBarcode(product1C.getBarcode());
-                if (productId.isEmpty()) {
+                if (isNull(productId) || productId.isEmpty()) {
                     //new barcode. add product
                     addProduct(product1C);
                 } else {
