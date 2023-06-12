@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Схожі товари</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -36,6 +37,11 @@
             <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
             <button type="submit" class="btn btn-success">
                 <i class="material-icons mr-1">Всі</i>
+            </button>
+        </form>
+        <form action="/similarity/random" class="mr-1" method="post">
+            <button type="submit" class="btn btn-secondary">
+                <i class="material-icons mr-1" th:text="${random} ? 'Випадково' : 'По імені'"></i>
             </button>
         </form>
     </div>
@@ -72,8 +78,8 @@
                 <td th:text="${simProduct.getBarcodesStringList()}"></td>
                 <td class="text-center">
                     <div th:switch="${simProduct.weight}">
-                        <span class="badge" th:case="true">Так</span>
-                        <span class="badge" th:case="false">Ні</span>
+                        <span th:case="true">Так</span>
+                        <span th:case="false">Ні</span>
                     </div>
                 </td>
                 <td>

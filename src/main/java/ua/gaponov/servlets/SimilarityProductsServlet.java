@@ -1,6 +1,5 @@
 package ua.gaponov.servlets;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,6 +27,7 @@ import static ua.gaponov.config.Constants.PRODUCT_ID_PARAMETER_NAME;
 public class SimilarityProductsServlet extends ApplicationServlet {
 
     private static List<String> skipProducts = new ArrayList<>();
+    private static boolean random;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -40,7 +40,8 @@ public class SimilarityProductsServlet extends ApplicationServlet {
 
         int count = SimilarityProductService.getCount();
 
-        SimilarityProduct similarityProduct = SimilarityProductService.getFirst(skipProducts);
+        SimilarityProduct similarityProduct = SimilarityProductService.getFirst(skipProducts, random);
+
         ProductService.fillBarcodes(similarityProduct.getMainProduct());
         ProductService.fillShopProducts(similarityProduct.getMainProduct());
 
@@ -54,7 +55,8 @@ public class SimilarityProductsServlet extends ApplicationServlet {
                 req.getLocale(),
                 Map.of("product", similarityProduct,
                         "id", productId,
-                        "count", count)
+                        "count", count,
+                        "random", random)
         );
 
         resp.setContentType("text/html");
@@ -74,19 +76,22 @@ public class SimilarityProductsServlet extends ApplicationServlet {
 
                 SimilarityProductService.deleteSimilarityProductsByProductId(simProductId);
                 ProductService.delete(simProductId);
-
                 break;
             case "/different":
                 SimilarityProductService.deleteSimilarityProductsByProductId(simProductId);
                 break;
             case "/skip":
-                skipProducts.add("'"+mainProductId+"'");
+                skipProducts.add("'" + mainProductId + "'");
                 break;
             case "/delete-skip":
                 skipProducts.clear();
                 break;
+            case "/random":
+                random = !random;
+                break;
             default:
         }
+
         ProductService.completeNameProduct(mainProductId);
         //redirect
         resp.setStatus(resp.SC_MOVED_PERMANENTLY);
