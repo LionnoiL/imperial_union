@@ -49,7 +49,7 @@ public class SimilarityProductService {
         }
 
         String whereString = "";
-        if (skipProducts.size()>0){
+        if (skipProducts != null && skipProducts.size()>0){
             whereString = " where s.product_id_1 not in ("+String.join(",", skipProducts)+")";
         }
 

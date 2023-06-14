@@ -3,6 +3,7 @@ package ua.gaponov.servlets;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.thymeleaf.context.Context;
 import ua.gaponov.entity.barcodes.BarcodeService;
@@ -11,9 +12,11 @@ import ua.gaponov.entity.product.ProductService;
 import ua.gaponov.entity.shopproduct.ShopProductService;
 import ua.gaponov.entity.similarity.SimilarityProduct;
 import ua.gaponov.entity.similarity.SimilarityProductService;
+import ua.gaponov.entity.users.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,12 +29,21 @@ import static ua.gaponov.config.Constants.PRODUCT_ID_PARAMETER_NAME;
 @WebServlet(value = "/similarity/*")
 public class SimilarityProductsServlet extends ApplicationServlet {
 
-    private static List<String> skipProducts = new ArrayList<>();
-    private static boolean random;
+    private static Map<User, List<String>> skipProducts = new HashMap<>();
+    private static Map<User, Boolean> random = new HashMap<>();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
+
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            resp.setStatus(resp.SC_MOVED_PERMANENTLY);
+            resp.setHeader("Location", "/login");
+            return;
+        }
 
         String productId = "";
         if (req.getParameterMap().containsKey(PRODUCT_ID_PARAMETER_NAME)) {
@@ -40,7 +52,11 @@ public class SimilarityProductsServlet extends ApplicationServlet {
 
         int count = SimilarityProductService.getCount();
 
-        SimilarityProduct similarityProduct = SimilarityProductService.getFirst(skipProducts, random);
+        boolean userRandomValue = false;
+        if (random.containsKey(user)){
+            userRandomValue = random.get(user);
+        }
+        SimilarityProduct similarityProduct = SimilarityProductService.getFirst(skipProducts.get(user), userRandomValue);
 
         ProductService.fillBarcodes(similarityProduct.getMainProduct());
         ProductService.fillShopProducts(similarityProduct.getMainProduct());
@@ -56,7 +72,8 @@ public class SimilarityProductsServlet extends ApplicationServlet {
                 Map.of("product", similarityProduct,
                         "id", productId,
                         "count", count,
-                        "random", random)
+                        "random", userRandomValue,
+                        "user", user)
         );
 
         resp.setContentType("text/html");
@@ -66,6 +83,9 @@ public class SimilarityProductsServlet extends ApplicationServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+
         String pathInfo = req.getPathInfo();
         String simProductId = req.getParameter("simProductId");
         String mainProductId = req.getParameter("mainProductId");
@@ -81,13 +101,22 @@ public class SimilarityProductsServlet extends ApplicationServlet {
                 SimilarityProductService.deleteSimilarityProductsByProductId(simProductId);
                 break;
             case "/skip":
-                skipProducts.add("'" + mainProductId + "'");
+                List<String> listSkipedUserProducts = skipProducts.get(user);
+                if (listSkipedUserProducts == null) {
+                    listSkipedUserProducts = new ArrayList<>();
+                }
+                listSkipedUserProducts.add("'" + mainProductId + "'");
+                skipProducts.put(user, listSkipedUserProducts);
                 break;
             case "/delete-skip":
                 skipProducts.clear();
                 break;
             case "/random":
-                random = !random;
+                boolean userRandomValue = false;
+                if (random.containsKey(user)){
+                    userRandomValue = random.get(user);
+                }
+                random.put(user, !userRandomValue);
                 break;
             default:
         }

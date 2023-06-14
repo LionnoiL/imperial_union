@@ -26,25 +26,38 @@
     <div><h3 th:text="'Схожі товари. Залишилось:  ' + ${count}"></h3></div>
     <br>
 
-    <div class="btn-group">
-        <form action="/similarity/skip" class="mr-1" method="post">
-            <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
-            <button type="submit" class="btn btn-warning">
-                <i class="material-icons mr-1">Пропустити</i>
-            </button>
-        </form>
-        <form action="/similarity/delete-skip" class="mr-1" method="post">
-            <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
-            <button type="submit" class="btn btn-success">
-                <i class="material-icons mr-1">Всі</i>
-            </button>
-        </form>
-        <form action="/similarity/random" class="mr-1" method="post">
-            <button type="submit" class="btn btn-secondary">
-                <i class="material-icons mr-1" th:text="${random} ? 'Випадково' : 'По імені'"></i>
-            </button>
-        </form>
+    <div class="alert alert-primary" role="alert">
+
+        <div class="row">
+            <div class="col-md-10">
+                <div class="btn-group">
+                    <form action="/similarity/skip" class="mr-1" method="post">
+                        <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="material-icons mr-1">Пропустити</i>
+                        </button>
+                    </form>
+                    <form action="/similarity/delete-skip" class="mr-1" method="post">
+                        <input type="hidden" name="mainProductId" th:value="${product.mainProduct.id}">
+                        <button type="submit" class="btn btn-success">
+                            <i class="material-icons mr-1">Всі</i>
+                        </button>
+                    </form>
+                    <form action="/similarity/random" class="mr-1" method="post">
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="material-icons mr-1" th:text="${random} ? 'Випадково' : 'По імені'"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div th:text="${user.name}"></div>
+                <a href="/logout" class="btn btn-primary">Вийти</a>
+            </div>
+        </div>
     </div>
+
+
 
 
 
