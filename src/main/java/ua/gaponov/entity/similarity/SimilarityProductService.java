@@ -100,10 +100,10 @@ public class SimilarityProductService {
         Database.execSql("delete from similarity_products");
     }
 
-    public static void deleteSimilarityProductsByProductId(String productId) {
-        StatementParameters<String> parameters = StatementParameters.build(productId);
+    public static void deleteSimilarityProductsByProductId(String simProductId, String mainProductId) {
+        StatementParameters<String> parameters = StatementParameters.build(simProductId, mainProductId);
         String sql = """
-                delete from similarity_products where product_id_2 = ?
+                delete from similarity_products where product_id_2 = ? and product_id_1 = ?
                 """;
         try {
             PRODUCT_SQL_HELPER.execSql(sql, parameters);
@@ -111,7 +111,7 @@ public class SimilarityProductService {
             throw new RuntimeException(e);
         }
         sql = """
-                delete from similarity_products where product_id_1 = ?
+                delete from similarity_products where product_id_1 = ? and product_id_2 = ?
                 """;
         try {
             PRODUCT_SQL_HELPER.execSql(sql, parameters);
@@ -124,7 +124,7 @@ public class SimilarityProductService {
         ShopProductService.moveShopProducts(mainProductId, simProductId);
         BarcodeService.moveBarcodes(mainProductId, simProductId);
 
-        SimilarityProductService.deleteSimilarityProductsByProductId(simProductId);
-        ProductService.delete(simProductId);
+        SimilarityProductService.deleteSimilarityProductsByProductId(simProductId, mainProductId);
+        //ProductService.deleteWithoutShopProducts(simProductId);
     }
 }

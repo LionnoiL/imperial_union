@@ -104,7 +104,7 @@ public class SimilarityProductsServlet extends ApplicationServlet {
                 SimilarityProductService.processAnalog(simProductId, mainProductId);
                 break;
             case "/different":
-                SimilarityProductService.deleteSimilarityProductsByProductId(simProductId);
+                SimilarityProductService.deleteSimilarityProductsByProductId(simProductId, mainProductId);
                 break;
             case "/skip":
                 processSkip(user, mainProductId);

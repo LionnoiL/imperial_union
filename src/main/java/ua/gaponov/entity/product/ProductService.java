@@ -163,6 +163,14 @@ public class ProductService {
         }
     }
 
+    public static void deleteWithoutShopProducts(String productId) {
+        Product product = getById(productId);
+        ProductService.fillShopProducts(product);
+        if (product.getShopProducts().isEmpty()){
+            delete(productId);
+        }
+    }
+
     public static void completeNameProduct(String productId) {
         int count = PRODUCT_SQL_HELPER.getCount(
                 "SELECT COUNT(s.product_id_2) cnt FROM similarity_products s WHERE s.product_id_1 = '" +
