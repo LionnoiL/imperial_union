@@ -32,7 +32,7 @@ public class Analyze {
     private static int packetSize = 0;
 
     public static void importData(List<Product1C> productList) {
-        log.info("Start check barcodes");
+        log.info("Start import data");
         currentIndex = 0;
         packet = 0;
         packetSize = productList.size() / 100;
@@ -52,7 +52,7 @@ public class Analyze {
                 addProduct(product1C);
             }
         }
-        log.info("End check barcodes");
+        log.info("End import data");
     }
 
     private static void addProduct(Product1C product1C) {

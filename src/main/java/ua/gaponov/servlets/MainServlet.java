@@ -17,7 +17,6 @@ public class MainServlet extends ApplicationServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setStatus(resp.SC_MOVED_PERMANENTLY);
-        resp.setHeader("Location", "/similarity");
+        SimilarityProductsServlet.redirect(resp);
     }
 }

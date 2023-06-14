@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import ua.gaponov.database.SqlHelper;
 import ua.gaponov.database.StatementParameters;
 import ua.gaponov.database.StringDatabaseMapper;
-import ua.gaponov.entity.product1c.Product1C;
 
 import java.sql.SQLException;
 import java.util.List;

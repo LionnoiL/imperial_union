@@ -21,7 +21,6 @@ public class LogoutServlet extends ApplicationServlet {
         HttpSession session = req.getSession();
         session.invalidate();
 
-        resp.setStatus(resp.SC_MOVED_PERMANENTLY);
-        resp.setHeader("Location", "/login");
+        LoginServlet.redirect(resp);
     }
 }

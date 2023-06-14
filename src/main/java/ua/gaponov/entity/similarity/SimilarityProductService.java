@@ -4,9 +4,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ua.gaponov.database.*;
+import ua.gaponov.entity.barcodes.BarcodeService;
 import ua.gaponov.entity.product.Product;
 import ua.gaponov.entity.product.ProductDatabaseMapper;
 import ua.gaponov.entity.product.ProductService;
+import ua.gaponov.entity.shopproduct.ShopProductService;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,13 +46,13 @@ public class SimilarityProductService {
 
     public static SimilarityProduct getFirst(List<String> skipProducts, boolean random) {
         String order = " p.product_name ";
-        if (random){
+        if (random) {
             order = " rand() ";
         }
 
         String whereString = "";
-        if (skipProducts != null && skipProducts.size()>0){
-            whereString = " where s.product_id_1 not in ("+String.join(",", skipProducts)+")";
+        if (skipProducts != null && skipProducts.size() > 0) {
+            whereString = " where s.product_id_1 not in (" + String.join(",", skipProducts) + ")";
         }
 
         SimilarityProduct similarityProduct = new SimilarityProduct();
@@ -61,12 +63,12 @@ public class SimilarityProductService {
                         """ +
                         whereString +
                         """
-                        GROUP BY s.product_id_1
-                        ORDER BY""" +
+                                GROUP BY s.product_id_1
+                                ORDER BY""" +
                         order +
                         """
-                        LIMIT 1
-                        """,
+                                LIMIT 1
+                                """,
                 PRODUCT_DATABASE_MAPPER
         );
         for (Product product : products) {
@@ -89,7 +91,7 @@ public class SimilarityProductService {
         return similarityProduct;
     }
 
-    public static int getCount(){
+    public static int getCount() {
         return PRODUCT_SQL_HELPER.getCount(
                 "SELECT count(product_id_1) cnt FROM similarity_products");
     }
@@ -116,5 +118,13 @@ public class SimilarityProductService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void processAnalog(String simProductId, String mainProductId) {
+        ShopProductService.moveShopProducts(mainProductId, simProductId);
+        BarcodeService.moveBarcodes(mainProductId, simProductId);
+
+        SimilarityProductService.deleteSimilarityProductsByProductId(simProductId);
+        ProductService.delete(simProductId);
     }
 }

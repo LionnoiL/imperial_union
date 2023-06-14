@@ -6,9 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import ua.gaponov.database.DatabaseRequest;
 import ua.gaponov.database.SqlHelper;
 import ua.gaponov.database.StatementParameters;
+import ua.gaponov.entity.barcodes.BarcodeService;
 import ua.gaponov.entity.product.Product;
 import ua.gaponov.entity.product.ProductService;
 import ua.gaponov.entity.product1c.Product1C;
+import ua.gaponov.entity.similarity.SimilarityProductService;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

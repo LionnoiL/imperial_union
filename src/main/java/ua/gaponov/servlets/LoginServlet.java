@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.thymeleaf.context.Context;
 import ua.gaponov.entity.users.UserService;
+import ua.gaponov.utils.ServletUtils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -19,19 +19,17 @@ import java.util.Collections;
 @WebServlet(value = "/login")
 public class LoginServlet extends ApplicationServlet {
 
+    public static void redirect(HttpServletResponse resp) {
+        resp.setStatus(resp.SC_MOVED_PERMANENTLY);
+        resp.setHeader("Location", "/login");
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         session.invalidate();
 
-        Context simpleContext = new Context(
-                req.getLocale(),
-                Collections.emptyMap()
-        );
-
-        resp.setContentType("text/html");
-        engine.process("login", simpleContext, resp.getWriter());
-        resp.getWriter().close();
+        ServletUtils.processTemplate(engine, req, resp, "login", Collections.emptyMap());
     }
 
     @Override
@@ -43,12 +41,9 @@ public class LoginServlet extends ApplicationServlet {
             HttpSession session = req.getSession();
             session.setAttribute("user", UserService.getByName(userName));
 
-            resp.setStatus(resp.SC_MOVED_PERMANENTLY);
-            resp.setHeader("Location", "/similarity");
+            SimilarityProductsServlet.redirect(resp);
             return;
         }
-
-        resp.setStatus(resp.SC_MOVED_PERMANENTLY);
-        resp.setHeader("Location", "/login");
+        redirect(resp);
     }
 }
