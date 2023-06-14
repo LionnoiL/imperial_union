@@ -4,11 +4,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.thymeleaf.context.Context;
 import ua.gaponov.analyze.Analyze;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * @author Andriy Gaponov
@@ -32,13 +30,6 @@ public class ServiceServlet extends ApplicationServlet {
                 break;
         }
 
-        Context simpleContext = new Context(
-                req.getLocale(),
-                Map.of()
-        );
-
-        resp.setContentType("text/html");
-        engine.process("similarity", simpleContext, resp.getWriter());
-        resp.getWriter().close();
+        SimilarityProductsServlet.redirect(resp);
     }
 }
