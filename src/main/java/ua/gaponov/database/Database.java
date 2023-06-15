@@ -29,20 +29,20 @@ public class Database {
     static {
         dataSource = new BasicDataSource();
 
-        if (Objects.nonNull(System.getenv("url"))){
-            dataSource.setUrl(System.getenv("url"));
+        if (Objects.nonNull(System.getenv(CONNECTION_URL_MYSQL))){
+            dataSource.setUrl(System.getenv(CONNECTION_URL_MYSQL));
         } else {
             dataSource.setUrl(properties.getProperty(CONNECTION_URL_MYSQL));
         }
 
-        if (Objects.nonNull(System.getenv("username"))){
-            dataSource.setUsername(System.getenv("username"));
+        if (Objects.nonNull(System.getenv(CONNECTION_USERNAME_MYSQL))){
+            dataSource.setUsername(System.getenv(CONNECTION_USERNAME_MYSQL));
         } else {
             dataSource.setUsername(properties.getProperty(CONNECTION_USERNAME_MYSQL));
         }
 
-        if (Objects.nonNull(System.getenv("password"))){
-            dataSource.setPassword(System.getenv("password"));
+        if (Objects.nonNull(System.getenv(CONNECTION_PASSWORD_MYSQL))){
+            dataSource.setPassword(System.getenv(CONNECTION_PASSWORD_MYSQL));
         } else {
             dataSource.setPassword(properties.getProperty(CONNECTION_PASSWORD_MYSQL));
         }
