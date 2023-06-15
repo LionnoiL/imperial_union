@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Properties;
 
 import static ua.gaponov.config.Constants.*;
@@ -27,9 +28,24 @@ public class Database {
 
     static {
         dataSource = new BasicDataSource();
-        dataSource.setUrl(properties.getProperty(CONNECTION_URL_MYSQL));
-        dataSource.setUsername(properties.getProperty(CONNECTION_USERNAME_MYSQL));
-        dataSource.setPassword(properties.getProperty(CONNECTION_PASSWORD_MYSQL));
+
+        if (Objects.nonNull(System.getenv("url"))){
+            dataSource.setUrl(System.getenv("url"));
+        } else {
+            dataSource.setUrl(properties.getProperty(CONNECTION_URL_MYSQL));
+        }
+
+        if (Objects.nonNull(System.getenv("username"))){
+            dataSource.setUsername(System.getenv("username"));
+        } else {
+            dataSource.setUsername(properties.getProperty(CONNECTION_USERNAME_MYSQL));
+        }
+
+        if (Objects.nonNull(System.getenv("password"))){
+            dataSource.setPassword(System.getenv("password"));
+        } else {
+            dataSource.setPassword(properties.getProperty(CONNECTION_PASSWORD_MYSQL));
+        }
 
         dataSource.setMinIdle(5);
         dataSource.setMaxIdle(10);
