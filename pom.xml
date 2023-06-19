@@ -91,7 +91,11 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
-                    <webappDirectory>/sample/servlet/container/deploy/directory</webappDirectory>
+                    <webResources>
+                        <resource>
+                            <directory>src/webapp</directory>
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
         </plugins>

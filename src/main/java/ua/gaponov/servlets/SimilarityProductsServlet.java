@@ -13,10 +13,9 @@ import ua.gaponov.entity.users.User;
 import ua.gaponov.utils.ServletUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static java.util.Objects.isNull;
 
 /**
  * @author Andriy Gaponov
@@ -52,6 +51,9 @@ public class SimilarityProductsServlet extends ApplicationServlet {
 
     private SimilarityProduct getSimilarityProduct(User user, boolean userRandomOptionsValue) {
         SimilarityProduct similarityProduct = SimilarityProductService.getFirst(skippedProducts.get(user), userRandomOptionsValue);
+        if (isNull(similarityProduct.getMainProduct())){
+            return null;
+        }
         ProductService.fillBarcodes(similarityProduct.getMainProduct());
         ProductService.fillShopProducts(similarityProduct.getMainProduct());
 
@@ -81,6 +83,10 @@ public class SimilarityProductsServlet extends ApplicationServlet {
             userRandomOptionsValue = usersRandomOptions.get(user);
         }
         SimilarityProduct similarityProduct = getSimilarityProduct(user, userRandomOptionsValue);
+
+        if (isNull(similarityProduct)){
+            ServletUtils.processTemplate(engine, req, resp, "empty", Collections.emptyMap());
+        }
 
         Map<String, Object> parameters = Map.of(
                 "product", similarityProduct,

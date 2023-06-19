@@ -12,3 +12,14 @@ services:
       - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 12345
+
+  web:
+    depends_on:
+      - db
+    image: tomcat
+    volumes:
+      - ./target/imperialunion.war:/usr/local/tomcat/webapps/ROOT.war
+    ports:
+      - '8082:8080'
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
