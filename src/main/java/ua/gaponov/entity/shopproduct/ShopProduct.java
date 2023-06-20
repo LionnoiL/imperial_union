@@ -2,6 +2,7 @@ package ua.gaponov.entity.shopproduct;
 
 import lombok.Getter;
 import lombok.Setter;
+import ua.gaponov.entity.product.Product;
 
 /**
  * @author Andriy Gaponov
@@ -12,4 +13,5 @@ public class ShopProduct {
 
     private String code;
     private int shopId;
+    private Product product;
 }

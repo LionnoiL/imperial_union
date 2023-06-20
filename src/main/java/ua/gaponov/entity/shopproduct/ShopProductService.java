@@ -22,6 +22,7 @@ import java.util.List;
 public class ShopProductService {
 
     private static final SqlHelper<Object> SQL_HELPER = new SqlHelper<>();
+    private static final SqlHelper<ShopProduct> SHOP_PRODUCT_SQL_HELPER = new SqlHelper<>();
 
     public static void add(String id, String code, int shopId) throws SQLException {
         List<DatabaseRequest> requestList = new ArrayList<>();
@@ -91,5 +92,14 @@ public class ShopProductService {
                         + product.getCode()
                         + "' and shop_id = " + product.getShopId());
         return shopProductFinded > 0;
+    }
+
+    public static List<ShopProduct> getByShopId(int shopId) {
+        StatementParameters<Integer> parameters = StatementParameters.build(shopId);
+        return SHOP_PRODUCT_SQL_HELPER.getAll(
+                "SELECT * FROM shop_products s WHERE s.shop_id = ?",
+                parameters,
+                new ShopProductDatabaseMapper()
+        );
     }
 }
