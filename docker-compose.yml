@@ -4,22 +4,33 @@ services:
 
   db:
     image: mysql
-    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
-    # (this is just an example, not intended to be a production configuration)
+    container_name: mysql-db
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:
       - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 12345
+    networks:
+      - imperial
+    profiles:
+      - dev
 
   web:
     depends_on:
       - db
-    image: tomcat
-    volumes:
-      - ./target/imperialunion.war:/usr/local/tomcat/webapps/ROOT.war
+    image: imperial-union:latest
+    build:
+      context: ./
+      dockerfile: docker/imperial-union-app/Dockerfile
+    container_name: imperial-union-app
     ports:
       - '8082:8080'
-    environment:
-      MYSQL_ROOT_PASSWORD: 12345
+    networks:
+      - imperial
+    profiles:
+      - dev
+
+networks:
+  imperial:
+    driver: bridge
