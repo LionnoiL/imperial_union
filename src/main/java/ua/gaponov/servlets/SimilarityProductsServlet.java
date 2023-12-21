@@ -85,7 +85,9 @@ public class SimilarityProductsServlet extends ApplicationServlet {
         SimilarityProduct similarityProduct = getSimilarityProduct(user, userRandomOptionsValue);
 
         if (isNull(similarityProduct)){
-            ServletUtils.processTemplate(engine, req, resp, "empty", Collections.emptyMap());
+            ServletUtils.processTemplate(engine, req, resp, "empty", Map.of(
+                    "user", user
+            ));
         }
 
         Map<String, Object> parameters = Map.of(

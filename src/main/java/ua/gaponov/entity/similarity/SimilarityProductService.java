@@ -50,9 +50,9 @@ public class SimilarityProductService {
             order = " rand() ";
         }
 
-        String whereString = "";
+        String whereString = " where 2 = 2 ";
         if (skipProducts != null && skipProducts.size() > 0) {
-            whereString = " where s.product_id_1 not in (" + String.join(",", skipProducts) + ")";
+            whereString = whereString + " and s.product_id_1 not in (" + String.join(",", skipProducts) + ")";
         }
 
         SimilarityProduct similarityProduct = new SimilarityProduct();
@@ -60,6 +60,7 @@ public class SimilarityProductService {
                 """
                         SELECT p.* FROM similarity_products s
                         LEFT JOIN products p ON p.id = s.product_id_1
+                        LEFT JOIN shop_products sp ON sp.product_id = s.product_id_1
                         """ +
                         whereString +
                         """
