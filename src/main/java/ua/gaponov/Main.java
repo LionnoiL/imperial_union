@@ -3,6 +3,7 @@ package ua.gaponov;
 import lombok.extern.slf4j.Slf4j;
 import ua.gaponov.analyze.Analyze;
 import ua.gaponov.config.LoggingConfiguration;
+import ua.gaponov.database.Database;
 import ua.gaponov.entity.product1c.Product1C;
 import ua.gaponov.entity.product1c.Product1CService;
 
@@ -29,7 +30,14 @@ public class Main {
             Analyze.importData(productList1);
         }
         Analyze.analyzeNames();
+
+        Database.execSql("""
+                DELETE si FROM similarity_products si
+                LEFT JOIN shop_products s1 ON s1.product_id = si.product_id_1
+                LEFT JOIN shop_products s2 ON s2.product_id = si.product_id_2
+                LEFT JOIN products p1 ON p1.id = si.product_id_1
+                LEFT JOIN products p2 ON p2.id = si.product_id_2
+                WHERE s1.shop_id = s2.shop_id
+                """);
     }
-
-
 }
